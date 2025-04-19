@@ -1,0 +1,255 @@
+--VARIAVEIS BÁSICAS
+
+--Aprendendo SELECT--
+/*Select FirstName From DimCustomer*/
+
+--Select com mais de uma tabela--
+/*Select FirstName, LastName, EmailAddress From DimCustomer*/
+
+--Selecionando todas a linhas e colunas da tabela Costumer--
+/*Select * From DimCustomer*/
+
+--Retonar as 10 primeiras linhas da tabela Product--
+/*Select TOP(100) ProductName From DimProduct*/
+
+--Retonar as 10% primeiras linhas da tabela, se a tabela tem 100 linhas, ele retorna as 10 primeiras
+/*Select TOP(10) PERCENT ProductName From DimProduct*/
+
+--Select Distinct Retonar todas as linhas diferentes da coluna ColorName
+/*Select ColorName From dimProduct
+Select Distinct ColorName From DimProduct*/
+
+--Retonar 3 colunas da tabela dimProcuct e renomear cada uma delas
+/*Select 
+ProductName AS Produto,
+BrandName AS Marca,
+ColorName AS Cor
+From DimProduct*/
+
+--Para colocar duas palavras usar aspas simples
+/*Select ColorName AS 'Nome da Cor' From DimProduct*/
+--Select para descobrir todos os campos
+/*Select Column_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS Where Table_NAME = 'DimProduct';*/
+
+--Order By
+--Selecione as 100 primeiras linhas da tabela DIMStore e ordene de acordo com a coluna de quantiade de funcionários
+/*Select TOP(100) StoreName, EmployeeCount From DimStore Order By EmployeeCount*/
+
+--Order By DESC
+/*Select TOP(100) StoreName, EmployeeCount From DimStore Order By EmployeeCount DESC*/
+
+--ORDER BY ASC DESC (Selecionando mais de uma coluna)
+--Selecione as 100 primeiras linhas da tabela e ordene de acordo com as colunas UnitCost (DESC) e Weight (ASC)
+/*Select TOP(100) ProductName, Weight, UnitCost FROM DimProduct ORDER BY ProductName ASC, Weight DESC*/
+
+--Where e Like: Um Filtro Especial
+/*Select * From DimProduct Where ProductName Like '%MP3%'*/
+
+--Where AND, OR e NOT
+/*Select * From DimProduct Where BrandName = 'Contoso' And ColorName = 'Silver'*/
+/*Select * From DimProduct Where ColorName = 'Blue' OR ColorName = 'Silver'*/
+/*Select * From DimProduct Where NOT ColorName = 'Blue'*/
+
+--Where IN
+/*Select * From dimProduct Where ColorName IN ('Blue', 'Silver', 'Black')*/
+
+--Where (NOT) BETWEEN
+--Seleciona todas as vendas da tabela com quantidade vendida entre 10 e 15
+/*Select TOP(1000) * From FactSales Where SalesQuantity BETWEEN 10 AND 15*/
+
+--Where IS (NOT) NULL
+--Selecione todas as tabelas onde o primeiro nome é nulo
+/*Select * From dimCustomer Where FirstName Is Null
+Select * From DImCustomer Where FirstName Is Not Null*/
+
+--Count e Count Distinct
+--Select Count (CustomerKey) AS 'Qtd de Cliente' From DimCustomer
+--Select Count (Distinct DepartmentName) AS 'Qtd, Setores' From DimEmployee
+
+--SUM
+--Select Sum (SalesQuantity) AS 'Total Vendido' From FactSales Where UnitPrice >=100
+
+--AVG
+--Select AVG (SalesQuantity) AS 'Média de Vendas' From FactSales Where UnitPrice >=100
+
+--MIN e MAX
+--Select MIN(SalesQuantity) AS 'MIN VENDA' From FactSales 
+--Select MAX(SalesQuantity) AS 'MAX VENDA' From FactSales
+/*
+Select BrandName AS 'Marca', Count (BrandName) AS 'Total Marca'
+From DimProduct Where ClassName = 'Economy'
+Group By BrandName Having Count (BrandName) >= 200
+*/
+
+EXERCICIOS
+
+							--Exercicio 1--
+
+--Existem 2517 produtos cadastrados na base, se não tiver você deverá reportar ao gestor pra saber se exite alguma defasagem no controle dos produtos
+/*Select * From DimProduct*/
+
+--Até o mes passado, a empresa tinha 19500 clientes na base de controle. Verifique se esse número aumentou ou reduziu
+/*Select * From DimCustomer*/
+
+							--Exercicio 2--
+
+--Listar todos os clientes e suas respectivas datas de nasciment, além de um contato
+/*Select CustomerKey, FirstName, EmailAddress, BirthDate From dimCustomer*/
+--Renomeie as colunas
+/*Select 
+CustomerKey AS Identificaçao,
+FirstName AS 'Primeiro nome',
+EmailAddress AS Email,
+BirthDate AS 'Data de Nascimento'
+From dimCustomer*/
+
+							--Exercicio 3--
+
+--A contoso deciciu presentear os 100 primeiros clientes. Utilize comando para selecionar uma tabela com os 100 primeiros clientes
+/*Select TOP(100) * From DimCustomer*/
+
+--A empresa decidiu presentear os 20% primeiros clientes da historia. Utilize um comando para retonar 20% da tabela
+/*Select TOP(20) PERCENT * From DimCustomer*/
+
+--Adaptadar o primeiro item
+/*Select TOP(100) FirstName, EmailAddress, BirthDate From DimCustomer*/
+
+--Renomear as colunas em português
+/*Select TOP(100)
+FirstName AS 'Primeiro Nome',
+EmailAddress AS 'Email',
+BirthDate AS 'Data de nascimento'
+From Dimcustomer8*/
+
+							--Exercicio 4--
+
+--Usar comando para retornar os nomes dos fornecedores, renomear a coluna e nao repetir
+/*Select Distinct Manufacturer AS Produtor From DimProduct*/
+
+							--Exercicio 5--
+
+--Procurar um produto que não foi vendido ainda
+/*Select Distinct ProductKey From FactSales --2516 linhas
+Select Distinct Productkey From Dimproduct -- 2517 linhas*/
+
+							--Exercício 6
+
+--Buscar TOP 100 Vendas de acordo com o total vendido (SalesAmount) em ordem descrescente
+/*Select TOP(100) * FROM FactSales ORDER BY SalesAmount DESC*/
+
+							--Exercício 7
+							
+--Ordernar esses top10 produtos de acordo com a coluna de UnitPrice e estabelecer um critério de desempate, do maior para o menor
+--Caso haja empate cirar segundo critério de desempate alem do peso
+/*Select TOP(10) * From DimProduct ORDER BY Weight DESC, Unitprice DESC, ProductName ASC*/
+
+							--Exercício 8
+
+--Retorar apenas 2 colunas nessa consulta, Nome do Produto e Peso
+--Renomeie essas colunas com nomes mais intuitivos
+--Ordene esses produtos do mais pesado para o mais leve
+/*Select ProductName AS 'Nome do Produto', Weight AS Peso From DimProduct WHERE Weight >100 Order By Weight DESC*/
+
+							--Exercício 9
+
+--Descubra quantas lojas a empresa tem no total na tabela DimStore, retorne as seguintes informações
+--StoreName, OpenDate, EmployeeCount e renomear
+--Descubra quantas (e quais) estão ativas
+/*Select StoreName AS 'Nome da Loja', OpenDate AS 'Data de abertura', EmployeeCount AS Funcionarios
+From	DimStore
+Where	StoreType ='Store' AND Status = 'On'*/
+
+							--Exercício 10
+							
+--Identificar os ID's dos produtos 
+--Select * From DimProduct
+/*Select ProductName From DimProduct
+Where BrandName = 'Litware' AND AvailableForSaleDate = '15/03/2009'*/
+
+							--Exercício 11
+
+/*Select StoreName FROM DimStore Where Status LIKE '%f'
+Select Storename From DimStore Where Status = 'Off'
+Select StoreName From DimStore Where CloseDate IS NOT NULL*/
+
+							--Exercício 12
+
+/*Select StoreName FROM DimStore Where EmployeeCount Between 1 AND 20
+Select StoreName FROM DimStore Where EmployeeCount Between 21 AND 50
+Select StoreName FROM DimStore Where EmployeeCount > 50*/
+
+							--Exercício 13
+
+/*Select * FROM DimProduct WHERE ProductDescription LIKE '%LCD%'*/
+
+							--Exercício 14
+							
+/*Select * From DimProduct WHERE Colorname IN ('Green', 'Orange', 'Black', 'Silver', 'Pink') AND BrandName IN ('Contoso', 'Litware', 'Fabrikam')*/
+
+							--Exercício 15
+
+/*Select ProductName, UnitPrice From DimProduct Where ColorName = 'Silver' AND BrandName = 'Contoso' AND UnitPrice BetWeen 10 AND 30 ORDER BY UnitPrice DESC*/
+
+							--Exercício 16
+							
+/*Select SUM (SalesQuantity) AS 'Qtd. Total Vendidos', SUM (ReturnQuantity) AS 'Qtd. Total Devolvida' FROM FactSales Where channelkey = 1
+Select * From FactSales where channelKey = 1*/
+
+							--Exercício 17
+					
+/*Select AVG (YearlyIncome) AS 'Salario Cliente' From DimCustomer Where Occupation = 'Professional'*/
+
+							--Exercício 18
+							
+--A --Select MAX (EmployeeCount) AS 'Quantidade de Funcionário' FROM Dimstore
+--B --Select TOP (1) StoreName AS 'Nome da Loja', EmployeeCount 'Qnt. Funcionários' From DimStore ORDER BY EmployeeCount DESC
+--C --Select MIN (EmployeeCount) AS 'Quantidade de Funcionário' FROM Dimstore
+--D --Select TOP (1) StoreName AS 'Nome da Loja', EmployeeCount 'Qnt. Funcionários' From DimStore Where EmployeeCount IS NOT NULL Order By EmployeeCount ASC
+
+							--Exercicio 19
+							
+/*
+a) Select SUM (SalesQuantity) AS 'Qtd Vendida'
+From FactSales Group By channelKey
+
+b) Select StoreKey, SUM (SalesQuantity), SUM (ReturnQuantity)
+From FactSales Group By StoreKey
+
+c) Select channelKey, SUM (SalesQuantity)
+From FactSales Where DateKey BETWEEN '01/01/2007' AND '31/12/2007' 
+Group By channelkey
+*/
+
+							--Exercicio 20
+							
+/*
+a) Select ProductKey, SUM (SalesAmount) From FactSales
+Group By ProductKey Having SUM (SalesAmount) >= 5000000
+Order By SUM (SalesAmount) DESC
+
+b) Select TOP(10) ProductKey, SUM (SalesAmount) From FactSales
+Group By ProductKey Order By SUM (SalesAmount) DESC
+*/
+
+							--Exercicio 21
+							
+/*
+Select TOP(1) CustomerKey, SUM (SalesQuantity) From FactOnlineSales
+Group By CustomerKey Order By SUM(SalesQuantity) DESC
+
+Select TOP(3) ProductKey, SUM (SalesQuantity) From FactOnlineSales
+Where CustomerKey = 19037
+Group By ProductKey Order By SUM (SalesQuantity) DESC
+*/
+
+							--Exercicio 22
+							
+/*
+Select Count(ProductKey) "Qtd de Produto", BrandName FROM DimProduct
+Group By BrandName Order By BrandName
+
+Select ClassName, AVG (UnitPrice) From DimProduct
+Group By ClassName
+
+Select ColorName, SUM (Weight) From DimProduct
+Group By ColorName Order By ColorName ASC
