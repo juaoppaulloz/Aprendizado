@@ -1,0 +1,102 @@
+install.packages("DBI")
+install.packages("odbc")
+install.packages("ggplot2")
+
+library(DBI)
+library(odbc)
+# Criar a conexão
+con <- dbConnect(odbc::odbc(),
+                 Driver = "SQL Server",   # ou "SQL Server Native Client 11.0"
+                 Server = "NOTEBOOK-CAR-02",     # Nome do servidor SQL
+                 Database = "aulaR",
+                 UID = "",         # Se necessário
+                 PWD = "",           # Se necessário
+                 TrustServerCertificate = "yes",  # Para conexões seguras
+                 Port = 1433)             # Porta padrão do SQL Server
+
+# Verificar se a conexão foi bem-sucedida
+print(dbListTables(con))  # Lista as tabelas do banco
+
+dados <- dbGetQuery(con, "SELECT * From Vendas1")
+print(dados)
+
+#Gráfico de barras --------------------------------------------------------------------
+library(DBI)
+library(ggplot2)
+
+# Verificar conexão com o banco de dados
+if (!exists("con") || !dbIsValid(con)) {
+  stop("Erro: Conexão com o banco de dados não está ativa!")
+}
+
+# Obter os dados do banco de dados (produto e quantidade)
+dados <- dbGetQuery(con, "SELECT produto, quantidade FROM Vendas1")
+
+# Verificar se os dados foram carregados corretamente
+print(colnames(dados))
+print(head(dados))
+
+# Converter 'produto' para fator para melhor ordenação no gráfico
+dados$produto <- factor(dados$produto, levels = dados$produto[order(dados$quantidade)])
+
+# Criar e exibir o gráfico de barras horizontais
+if (nrow(dados) > 0) {
+  p <- ggplot(dados, aes(x = produto, y = quantidade, fill = produto)) +
+    geom_bar(stat = "identity") +  # Gráfico de barras com valores diretos
+    coord_flip() +  # Inverter eixo X e Y para barras horizontais
+    labs(title = "Quantidade de Vendas por Produto",
+         x = "Produto",
+         y = "Quantidade Vendida") +
+    theme_minimal() +
+    theme(legend.position = "none")  # Remover legenda, pois já temos rótulos
+
+  print(p)  # Exibir o gráfico
+} else {
+  warning("Nenhum dado disponível para o gráfico de barras.")
+}
+
+# Gráfico de pizza -------------------------------------------------------
+# Carregar pacotes necessários
+library(DBI)
+library(ggplot2)
+
+# Verificar conexão
+if (!exists("con") || !dbIsValid(con)) {
+  stop("Erro: Conexão com o banco de dados não está ativa!")
+}
+
+# Obter os dados do banco de dados
+dados <- dbGetQuery(con, "SELECT produto, quantidade, preco, dataVenda FROM Vendas1")
+
+# Verificar colunas e visualizar os primeiros dados
+print(colnames(dados))
+print(head(dados))
+
+# Garantir que a coluna dataVenda esteja no formato de data
+dados$dataVenda <- as.Date(dados$dataVenda, tryFormats = c("%Y-%m-%d", "%d/%m/%Y"))
+
+# Remover possíveis valores ausentes (NA)
+dados <- na.omit(dados)
+
+# Criar gráfico de barras (quantidade de vendas por produto)
+if (nrow(dados) > 0) {
+  barplot(dados$quantidade, 
+          names.arg = dados$produto, 
+          col = "#b63724", 
+          main = "Quantidade de Vendas por Produto",
+          xlab = "Produto", 
+          ylab = "Quantidade",
+          las = 2)  # Rotaciona os rótulos do eixo X para melhor leitura
+} else {
+  warning("Nenhum dado disponível para o gráfico de barras.")
+}
+
+# Criar gráfico de pizza (vendas por produto)
+valores <- tapply(dados$quantidade, dados$produto, sum, na.rm = TRUE)  # Soma as quantidades por produto
+if (length(valores) > 0) {
+  pie(valores, labels = names(valores), 
+      main = "Distribuição das Vendas por Produto", 
+      col = rainbow(length(valores)))
+} else {
+  warning("Nenhum dado disponível para o gráfico de pizza.")
+}
